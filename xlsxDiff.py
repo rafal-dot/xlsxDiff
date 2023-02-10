@@ -30,19 +30,17 @@ from openpyxl.utils import get_column_letter
 import xlsxwriter
 
 
-def log_print_message(is_log_enabled, message, prev_message_len):
+def log_print_message(is_log_enabled, message):
     """
     Print log message on screen
     :param is_log_enabled: defines, is message should be logged
     :param message: message text
-    :param prev_message_len: length of previous message (to be cleared)
     :return: current message length
     """
     if is_log_enabled:
-        trim_len = prev_message_len - len(message) if len(message) < prev_message_len else 0
+        trim_len = log_print_message.log_msg_len - len(message) if len(message) < log_print_message.log_msg_len else 0
         print(message + " " * trim_len + "\r", end="")
-        return len(message)
-    return prev_message_len
+        log_print_message.log_msg_len = len(message)
 
 
 def get_format(column, row, modified_rows_set, modified_columns_set, f_do_nothing, f_highlight,
@@ -96,12 +94,13 @@ parser.add_argument("-x", "--highlight", help="in each row, if there are any cel
 parser.add_argument("-v", "--verbose", help="verbose output. As it takes time to process large spreadsheets, "
                                             "this option facilitates progress tracking", action="store_true")
 parser.add_argument("-q", "--quiet", help="no output messages", action="store_true")
-parser.add_argument("--version", action="version", version='%(prog)s 1.0 (2023-02-10)')
+parser.add_argument("--version", action="version", version='%(prog)s 1.0.1 (2023-02-10)')
 args = parser.parse_args()
 
-log_msg_len = log_print_message(not args.quiet, f"Loading spreadsheet: {args.input1}", 0)
+log_print_message.log_msg_len = 0
+log_print_message(not args.quiet, f"Loading spreadsheet: {args.input1}")
 i1_wb = load_workbook(filename=args.input1, data_only=not args.formula)
-log_msg_len = log_print_message(not args.quiet, f"Loading spreadsheet: {args.input2}", log_msg_len)
+log_print_message(not args.quiet, f"Loading spreadsheet: {args.input2}")
 i2_wb = load_workbook(filename=args.input2, data_only=not args.formula)
 
 tab_names_dict = {}
@@ -144,17 +143,15 @@ for current_tab_key in tab_names_dict.keys():
         modified_rows = set()
         modified_cols = set()
         for c in range(max(i1_ws.max_column, i2_ws.max_column) - 1, -1, -1):
-            log_msg_len = log_print_message(not args.quiet,
-                                            f"Comparing tab: {current_tab_key}  column: {c}", log_msg_len)
+            log_print_message(not args.quiet, f"Comparing tab: {current_tab_key}  column: {c}")
             o_ws.set_column(c, c, max(
                 i1_ws.column_dimensions[get_column_letter(c + 1)].width,
                 i2_ws.column_dimensions[get_column_letter(c + 1)].width,
                 2))  # 2 is for very narrow columns, to make them easier to spot ;-)
 
             for r in range(max(i1_ws.max_row, i2_ws.max_row) - 1, -1, -1):
-                log_msg_len = log_print_message(not args.quiet and args.verbose,
-                                                f"Comparing tab: {current_tab_key}  column: {c}  row:{r:5}",
-                                                log_msg_len)
+                log_print_message(not args.quiet and args.verbose,
+                                  f"Comparing tab: {current_tab_key}  column: {c}  row:{r:5}")
                 (i1_value, i2_value) = (i1_ws.cell(r + 1, c + 1).value, i2_ws.cell(r + 1, c + 1).value)
 
                 # Check if cells are (i) empty, (ii) new or (iii) removed
@@ -226,12 +223,10 @@ for current_tab_key in tab_names_dict.keys():
         i2_ws = i2_wb[current_tab_key]
 
         for c in range(i2_ws.max_column):
-            log_msg_len = log_print_message(not args.quiet,
-                                            f"New tab: {current_tab_key}  column: {c}", log_msg_len)
+            log_print_message(not args.quiet, f"New tab: {current_tab_key}  column: {c}")
             o_ws.set_column(c, c, i2_ws.column_dimensions[get_column_letter(c + 1)].width)
             for r in range(i2_ws.max_row):
-                log_msg_len = log_print_message(not args.quiet and args.verbose,
-                                                f"New tab: {current_tab_key}  column: {c}  row: {r}", log_msg_len)
+                log_print_message(not args.quiet and args.verbose, f"New tab: {current_tab_key}  column: {c}  row: {r}")
                 val = str(i2_ws.cell(r + 1, c + 1).value) if i2_ws.cell(r + 1, c + 1).value is not None else ""
                 o_ws.write(r, c, val, f_added)
 
@@ -244,15 +239,14 @@ for current_tab_key in tab_names_dict.keys():
         i1_ws = i1_wb[current_tab_key]
 
         for c in range(i1_ws.max_column):
-            log_msg_len = log_print_message(not args.quiet,
-                                            f"Removed tab: {current_tab_key}  column: {c}", log_msg_len)
+            log_print_message(not args.quiet, f"Removed tab: {current_tab_key}  column: {c}")
             o_ws.set_column(c, c, i1_ws.column_dimensions[get_column_letter(c + 1)].width)
             for r in range(i1_ws.max_row):
-                log_msg_len = log_print_message(not args.quiet and args.verbose,
-                                                f"Removed tab: {current_tab_key}  column: {c}  row: {r}", log_msg_len)
+                log_print_message(not args.quiet and args.verbose,
+                                  f"Removed tab: {current_tab_key}  column: {c}  row: {r}")
                 val = str(i1_ws.cell(r + 1, c + 1).value) if i1_ws.cell(r + 1, c + 1).value is not None else ""
                 o_ws.write(r, c, val, f_removed)
 
-log_msg_len = log_print_message(not args.quiet, f"Saving spreadsheet: {args.output}", log_msg_len)
+log_print_message(not args.quiet, f"Saving spreadsheet: {args.output}")
 o_wb.close()
-log_msg_len = log_print_message(not args.quiet, " ", log_msg_len)
+log_print_message(not args.quiet, " ")
