@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """
+xlsxDiff.py: Excel .xlsx spreadsheet files comparison tool. It compares spreadsheets cell by cell and
+produces output in Word changes tracking style on cell level
+
+https://github.com/rafal-dot/xlsxDiff
+
 Created on Sat Apr  9 19:26:10 2020
 
-@author: Rafal Czeczotka <rafal.czeczotka at gmail.com>
+@author: Rafal Czeczotka <rafal dot czeczotka at gmail.com>
 
 Copyright (c) 2020-2023 Rafal Czeczotka
 
@@ -81,8 +86,6 @@ parser.add_argument("input2", help="second input spreadsheet file to compare", t
 parser.add_argument("output", help="output spreadsheet file with highlighted differences", type=str)
 parser.add_argument("-f", "--formula", help="compare formula text in cells instead of data values (default: disabled)",
                     action="store_true")
-parser.add_argument("-a", "--autofilter", help="add autofilter for changed tabs (default: disabled)",
-                    action="store_true")
 parser.add_argument("-x", "--highlight", help="in each row, if there are any cell changed, mark the first cell "
                                               "with a green background (row 1:1). In each column, if there are any "
                                               "cell changed, mark the first cell with a green background "
@@ -91,10 +94,13 @@ parser.add_argument("-x", "--highlight", help="in each row, if there are any cel
                                               "autofilter with color filter might be applied later in spreadsheet "
                                               "software (default: disabled)",
                     action="store_true")
+parser.add_argument("-a", "--autofilter", help="add autofilter for changed tabs (default: disabled)",
+                    action="store_true")
+parser.add_argument("-e", "--noempty", help="ignore empty cells (default: disabled)", action="store_true")
 parser.add_argument("-v", "--verbose", help="verbose output. As it takes time to process large spreadsheets, "
                                             "this option facilitates progress tracking", action="store_true")
 parser.add_argument("-q", "--quiet", help="no output messages", action="store_true")
-parser.add_argument("--version", action="version", version='%(prog)s 1.0.1 (2023-02-10)')
+parser.add_argument("--version", action="version", version='%(prog)s 1.1.0 (2023-02-11)')
 args = parser.parse_args()
 
 log_print_message.log_msg_len = 0
@@ -157,7 +163,9 @@ for current_tab_key in tab_names_dict.keys():
                 # Check if cells are (i) empty, (ii) new or (iii) removed
                 if i1_value in {None, ""} and i2_value in {None, ""}:
                     # Both cells empty
-                    o_ws.write(r, c, "",
+                    if args.noempty:
+                        continue
+                    o_ws.write(r, c, i2_value,
                                get_format(c, r, modified_rows, modified_cols, f_equal_cell, f_equal_cell_modified))
                     continue
                 elif str(i1_value) == str(i2_value):
