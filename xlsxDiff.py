@@ -69,14 +69,13 @@ def get_format(column, row, modified_rows_set, modified_columns_set, f_do_nothin
     return f_do_nothing
 
 
-parser = argparse.ArgumentParser(description="Compares two .xlsx spreadsheets, cell content by cell content. "
-                                             "Creates an output spreadsheet with all detailed text diffences "
-                                             "highlighted, in word procesor-like format, tracking changes in "
-                                             "each cell. Data can be filtered by color: (i) a white "
-                                             "backround indicates changed cell, (ii) gray backround indicates "
-                                             "a changed cell, (iii) green backround in first row/column "
-                                             "highlights changed columns/rows, (iv) underlined blue text indicates "
-                                             "added content and (v) crossed out red text indicates removed text.",
+parser = argparse.ArgumentParser(description="Compares two .xlsx Excel spreadsheets, cell content with cell "
+                                             "content. Creates an output spreadsheet with all the detailed cell "
+                                             "content differences, marking the changes in each cell in a format "
+                                             "similar to the track changes feature in a Word word processor. "
+                                             "More information can be found in the attached PDF documentation "
+                                             "file. The latest version of xlsxDiff can always be found here: "
+                                             "https://github.com/rafal-dot/xlsxDiff",
                                  epilog="Copyright (C) 2020-2023 Rafal Czeczotka. "
                                         "This program comes with ABSOLUTELY NO WARRANTY. "
                                         "This is free software, and you are welcome to redistribute it "
@@ -100,7 +99,7 @@ parser.add_argument("-e", "--noempty", help="ignore empty cells (default: disabl
 parser.add_argument("-v", "--verbose", help="verbose output. As it takes time to process large spreadsheets, "
                                             "this option facilitates progress tracking", action="store_true")
 parser.add_argument("-q", "--quiet", help="no output messages", action="store_true")
-parser.add_argument("--version", action="version", version='%(prog)s 1.1.0 (2023-02-11)')
+parser.add_argument("--version", action="version", version='%(prog)s 1.1.1 (2023-02-15)')
 args = parser.parse_args()
 
 log_print_message.log_msg_len = 0
@@ -160,7 +159,7 @@ for current_tab_key in tab_names_dict.keys():
                                   f"Comparing tab: {current_tab_key}  column: {c}  row:{r:5}")
                 (i1_value, i2_value) = (i1_ws.cell(r + 1, c + 1).value, i2_ws.cell(r + 1, c + 1).value)
 
-                # Check if cells are (i) empty, (ii) new or (iii) removed
+                # Check if cells are (i) empty, (ii) identical, (iii) new or (iv) removed
                 if i1_value in {None, ""} and i2_value in {None, ""}:
                     # Both cells empty
                     if args.noempty:
@@ -169,12 +168,12 @@ for current_tab_key in tab_names_dict.keys():
                                get_format(c, r, modified_rows, modified_cols, f_equal_cell, f_equal_cell_modified))
                     continue
                 elif str(i1_value) == str(i2_value):
-                    # Both cells equal (but not empty)
+                    # Both cells equal, but not empty
                     o_ws.write(r, c, str(i1_value),
                                get_format(c, r, modified_rows, modified_cols, f_equal_cell, f_equal_cell_modified))
                     continue
                 elif i1_value in {None, ""}:
-                    # First cell empty (value added)
+                    # First cell empty, so cell value added
                     val = str(i2_value) if i2_value is not None else ""
                     o_ws.write(r, c, val,
                                get_format(c, r, modified_rows, modified_cols, f_added, f_added_cell_modified,
@@ -182,7 +181,7 @@ for current_tab_key in tab_names_dict.keys():
                     is_data_in_tab_modified = True
                     continue
                 elif i2_value in {None, ""}:
-                    # Second cell empty (value removed)
+                    # Second cell empty, so cell value removed
                     val = str(i1_value) if i1_value is not None else ""
                     o_ws.write(r, c, val,
                                get_format(c, r, modified_rows, modified_cols, f_removed, f_removed_cell_modified,
