@@ -43,13 +43,15 @@ To download `xlsxDiff`, just do one of the following:
 
 - download the compressed archive from the repository page
   [GitHub](https://github.com/rafal-dot/xlsxDiff) (see `Code`/`Download ZIP`
-  button)
+  button):
+
+![Download ZIP file](images/xlsxDiff_download.png)
 
 or
 
 - execute a `git clone`:
 ```
-git clone https://github.com/rafal-dot/xlsxDiff
+git clone https://github.com/rafal-dot/xlsxDiff.git
 ```
 
 ## Python3 Download and installation
