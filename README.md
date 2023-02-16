@@ -9,6 +9,15 @@ I myself have desired to compare two complex Excel spreadsheets many times. I wa
 
 The main purpose of this tool is to fill the gap and facilitate the search and visualization of changes made between file versions, with an emphasis on the ability to track changes made at the level of individual cells with visualization similar to changes tracking feature in Word. This script ignores all other changes made, like removing/adding/changing order of rows/columns/tabs, changes in formatting etc. However, it is easier to quickly identify where such general changes have been made and after minor manual interventions in the input files it is easy to get a comprehensive and clear picture of all changes made.
 
+## FILES IN REPOSITORY
+
+There are following files:
+- [xlsxDiff.pdf](xlsxDiff.pdf) - documentation file with multiple examples, delatiled options description and FAQ
+- [xlsxDiff.py](xlsxDiff.py) - main script, single file
+- [LICENCE](LICENSE) - licence file
+- [README.md](README.md) - this file
+- [test-data](test-data) - directory with examples
+
 # INSTALLATION
 
 ## Python3 installation (Windows)
@@ -37,6 +46,8 @@ python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx
 
 ![Spreadsheet data difference](images/xlsxDiff_diff_text_data.png)
 
+
+If you add "-f" option, formulas will be compared instead of data:
 
 ```
 python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx -f
