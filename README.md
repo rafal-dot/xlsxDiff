@@ -47,7 +47,7 @@ To download `xlsxDiff`, just do one of the following:
 
 or
 
-- execute a git clone:
+- execute a `git clone`:
 ```
 git clone https://github.com/rafal-dot/xlsxDiff
 ```
