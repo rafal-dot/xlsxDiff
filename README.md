@@ -31,7 +31,7 @@ There are following files:
 - [`xlsxDiff.pdf`](xlsxDiff.pdf) - documentation file with multiple examples,
   delatiled options description and FAQ
 - [`xlsxDiff.py`](xlsxDiff.py) - main script, single file
-- [`LICENCE`](LICENSE) - GNU AGPL licence file
+- [`LICENCE`](LICENSE) - licence file
 - [`README.md`](README.md) - this file
 - [`test-data/`](test-data) - directory with examples
 
@@ -77,14 +77,17 @@ python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx -f
 
 # LICENCE
 
+Copyright © 2020-2023 Rafał Czeczótka
+
 This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later
-version.
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
+This program is distributed in the hope that it will be useful, WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE. See the GNU General Public License for more details.
+PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+details.
 
-You should have received a copy of the GNU General Public License along with
-this program. If not, see [http://www.gnu.org/licenses/]
+You should have received a copy of the GNU Affero General Public License along
+with this program.  If not, see [https://www.gnu.org/licenses/].
