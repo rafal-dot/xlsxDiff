@@ -1,7 +1,7 @@
-# xlsxDiff
+# `xlsxDiff`
 ![Example use](images/xlsxDiff_intro.png)
 
-Compare two Excel .xlsx files
+Compare two Excel .xlsx files, cell-by-cell, with visualization similar to changes tracking feature in Word
 
 # INTRODUCTION
 
@@ -12,11 +12,11 @@ The main purpose of this tool is to fill the gap and facilitate the search and v
 ## FILES IN REPOSITORY
 
 There are following files:
-- [xlsxDiff.pdf](xlsxDiff.pdf) - documentation file with multiple examples, delatiled options description and FAQ
-- [xlsxDiff.py](xlsxDiff.py) - main script, single file
-- [LICENCE](LICENSE) - licence file
-- [README.md](README.md) - this file
-- [test-data](test-data) - directory with examples
+- [`xlsxDiff.pdf`](xlsxDiff.pdf) - documentation file with multiple examples, delatiled options description and FAQ
+- [`xlsxDiff.py`](xlsxDiff.py) - main script, single file
+- [`LICENCE`](LICENSE) - licence file
+- [`README.md`](README.md) - this file
+- [`test-data/`](test-data) - directory with examples
 
 # INSTALLATION
 
@@ -28,9 +28,9 @@ For any Unix distribution you probably already have Python installed.
 
 I do not use macOS, but you can also find a distribution for this system.
 
-## Installation of OpenPyXL and XlsxWriter modules
+## Installation of `OpenPyXL` and `XlsxWriter` modules
 
-Install two necessary modules being used by xlsxDiff, that allow to manipulate .xlsx files:
+Install two necessary modules being used by `xlsxDiff`, that allow to manipulate `.xlsx` files:
 
 ```
 pip install openpyxl xlsxwriter
@@ -38,7 +38,7 @@ pip install openpyxl xlsxwriter
 
 # USE
 
-Using xlsxDiff is simple, in Windows environment just run cmd and call the script with three parameters: two input files and output file:
+Using `xlsxDiff` is simple, in Windows environment just run cmd and call the script with three parameters: two input files and output file:
 
 ```
 python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx
@@ -47,7 +47,7 @@ python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx
 ![Spreadsheet data difference](images/xlsxDiff_diff_text_data.png)
 
 
-If you add "-f" option, formulas will be compared instead of data:
+If you add `-f` option, formulas will be compared instead of data:
 
 ```
 python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx -f
