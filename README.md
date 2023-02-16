@@ -31,7 +31,7 @@ There are following files:
 - [`xlsxDiff.pdf`](xlsxDiff.pdf) - documentation file with multiple examples,
   delatiled options description and FAQ
 - [`xlsxDiff.py`](xlsxDiff.py) - main script, single file
-- [`LICENCE`](LICENSE) - licence file
+- [`LICENCE`](LICENSE) - GNU Affero General Public License file
 - [`README.md`](README.md) - this file
 - [`test-data/`](test-data) - directory with examples
 
