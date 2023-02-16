@@ -5,25 +5,24 @@ produces output in Word changes tracking style on cell level
 
 https://github.com/rafal-dot/xlsxDiff
 
-Created on Sat Apr  9 19:26:10 2020
+Created on Sat Apr 9 19:26:10 2020
 
 @author: Rafal Czeczotka <rafal dot czeczotka at gmail.com>
 
 Copyright (c) 2020-2023 Rafal Czeczotka
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>
-"""
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>."""
 
 import argparse
 
@@ -38,6 +37,7 @@ import xlsxwriter
 def log_print_message(is_log_enabled, message):
     """
     Print log message on screen
+
     :param is_log_enabled: defines, is message should be logged
     :param message: message text
     :return: current message length
@@ -52,6 +52,7 @@ def get_format(column, row, modified_rows_set, modified_columns_set, f_do_nothin
                do_update_sets=False):
     """
     Updates sets of columns and rows, checks if cell should be highlighted and returns relevant format
+
     :param column: current column
     :param row: current row
     :param modified_rows_set: set of modified rows
@@ -64,9 +65,123 @@ def get_format(column, row, modified_rows_set, modified_columns_set, f_do_nothin
     if do_update_sets:
         modified_rows_set.add(row)
         modified_columns_set.add(column)
-    if (column == 0 and row in modified_rows) or (row == 0 and column in modified_cols):
+    if (column == 0 and row in modified_rows_set) or (row == 0 and column in modified_columns_set):
         return f_highlight
     return f_do_nothing
+
+
+def clone_tab(out_ws, tab_key, i_ws, operation_type):
+    """
+    Clone the entire contents of an input Excel tab to an output tab to present it as added or removed,
+    and apply the formatting relevant to type
+
+    :param out_ws: output worksheet
+    :param tab_key: tab name
+    :param i_ws: input worksheet
+    :param operation_type: operation type: 'added' or 'removed'
+    """
+    tab_color, text_format = (None, None)
+    if operation_type == "added":
+        tab_color, text_format = ("blue", f_added)
+    elif operation_type == "removed":
+        tab_color, text_format = ("red", f_removed)
+    for c in range(i_ws.max_column):
+        log_print_message(not args.quiet, f"New tab: {tab_key}  column: {c}")
+        out_ws.set_column(c, c, i_ws.column_dimensions[get_column_letter(c + 1)].width)
+        for r in range(i_ws.max_row):
+            log_print_message(not args.quiet and args.verbose, f"New tab: {tab_key}  column: {c}  row: {r}")
+            ret_val = str(i_ws.cell(r + 1, c + 1).value) if i_ws.cell(r + 1, c + 1).value is not None else ""
+            out_ws.write(r, c, ret_val, text_format)
+    out_ws.set_tab_color(tab_color)
+
+
+def compare_tabs(out_ws, tab_key, i1_ws, i2_ws):
+    """
+    Compare the contents of two Excel tabs (from 1st and 2nd input spreadsheets) and generate the contents
+    of the output tab
+
+    :param out_ws: output worksheet
+    :param tab_key: tab name
+    :param i1_ws: 1st input worksheet
+    :param i2_ws: 2nd input worksheet
+    """
+    is_data_in_tab_modified = False
+
+    modified_rows = set()
+    modified_cols = set()
+    for c in range(max(i1_ws.max_column, i2_ws.max_column) - 1, -1, -1):
+        log_print_message(not args.quiet, f"Comparing tab: {tab_key}  column: {c}")
+        out_ws.set_column(c, c, max(
+            i1_ws.column_dimensions[get_column_letter(c + 1)].width,
+            i2_ws.column_dimensions[get_column_letter(c + 1)].width,
+            2))  # 2 is for very narrow columns, to make them easier to spot ;-)
+
+        for r in range(max(i1_ws.max_row, i2_ws.max_row) - 1, -1, -1):
+            log_print_message(not args.quiet and args.verbose,
+                              f"Comparing tab: {tab_key}  column: {c}  row:{r:5}")
+            (i1_value, i2_value) = (i1_ws.cell(r + 1, c + 1).value, i2_ws.cell(r + 1, c + 1).value)
+
+            # Check if cells are (i) empty, (ii) identical, (iii) new or (iv) removed
+            if i1_value in {None, ""} and i2_value in {None, ""}:
+                # Both cells empty
+                if args.noempty:
+                    continue
+                out_ws.write(r, c, i2_value,
+                             get_format(c, r, modified_rows, modified_cols, f_equal_cell, f_equal_cell_modified))
+                continue
+            elif str(i1_value) == str(i2_value):
+                # Both cells equal, but not empty
+                out_ws.write(r, c, str(i1_value),
+                             get_format(c, r, modified_rows, modified_cols, f_equal_cell, f_equal_cell_modified))
+                continue
+            elif i1_value in {None, ""}:
+                # First cell empty, so cell value added
+                val = str(i2_value) if i2_value is not None else ""
+                out_ws.write(r, c, val,
+                             get_format(c, r, modified_rows, modified_cols, f_added, f_added_cell_modified,
+                                        do_update_sets=args.highlight))
+                is_data_in_tab_modified = True
+                continue
+            elif i2_value in {None, ""}:
+                # Second cell empty, so cell value removed
+                val = str(i1_value) if i1_value is not None else ""
+                out_ws.write(r, c, val,
+                             get_format(c, r, modified_rows, modified_cols, f_removed, f_removed_cell_modified,
+                                        do_update_sets=args.highlight))
+                is_data_in_tab_modified = True
+                continue
+
+            # None of 4 conditione above applicable, so compare content in detail
+            rich_text = []
+            is_output_rich_string = False
+            for tag, i1, i2, j1, j2 in SequenceMatcher(None, str(i1_value), str(i2_value)).get_opcodes():
+                if tag == "equal":
+                    rich_text.append(str(i1_value)[i1:i2])
+                elif tag == "delete":
+                    rich_text.extend([f_removed, str(i1_value)[i1:i2]])
+                    is_output_rich_string = True
+                elif tag == "insert":
+                    rich_text.extend([f_added, str(i2_value)[j1:j2]])
+                    is_output_rich_string = True
+                elif tag == "replace":
+                    rich_text.extend([f_removed, str(i1_value)[i1:i2], f_added, str(i2_value)[j1:j2]])
+                    is_output_rich_string = True
+
+            if is_output_rich_string:
+                out_ws.write_rich_string(r, c, *rich_text,
+                                         get_format(c, r, modified_rows, modified_cols, f_simple, f_modified_cell,
+                                                    do_update_sets=args.highlight))
+            else:
+                # After 4 obvious checks in the beginning, this should not happen, but if...
+                out_ws.write(r, c, str(rich_text),
+                             get_format(c, r, modified_rows, modified_cols, f_simple, f_modified_cell,
+                                        do_update_sets=args.highlight))
+            is_data_in_tab_modified = True
+
+    if not is_data_in_tab_modified:
+        out_ws.set_tab_color("gray")
+    elif args.autofilter and args.highlight:
+        out_ws.autofilter(0, 0, 0, max(i1_ws.max_column, i2_ws.max_column) - 1)
 
 
 parser = argparse.ArgumentParser(description="Compares two .xlsx Excel spreadsheets, cell content with cell "
@@ -79,7 +194,7 @@ parser = argparse.ArgumentParser(description="Compares two .xlsx Excel spreadshe
                                  epilog="Copyright (C) 2020-2023 Rafal Czeczotka. "
                                         "This program comes with ABSOLUTELY NO WARRANTY. "
                                         "This is free software, and you are welcome to redistribute it "
-                                        "under GNU GPL v3 conditions (see https://www.gnu.org/licenses/).")
+                                        "under GNU Affero GPL conditions (see https://www.gnu.org/licenses/).")
 parser.add_argument("input1", help="first input spreadsheet file to compare", type=str)
 parser.add_argument("input2", help="second input spreadsheet file to compare", type=str)
 parser.add_argument("output", help="output spreadsheet file with highlighted differences", type=str)
@@ -99,7 +214,7 @@ parser.add_argument("-e", "--noempty", help="ignore empty cells (default: disabl
 parser.add_argument("-v", "--verbose", help="verbose output. As it takes time to process large spreadsheets, "
                                             "this option facilitates progress tracking", action="store_true")
 parser.add_argument("-q", "--quiet", help="no output messages", action="store_true")
-parser.add_argument("--version", action="version", version='%(prog)s 1.1.1 (2023-02-15)')
+parser.add_argument("--version", action="version", version='%(prog)s 1.1.2 (2023-02-16)')
 args = parser.parse_args()
 
 log_print_message.log_msg_len = 0
@@ -137,122 +252,20 @@ f_equal_cell = o_wb.add_format({**f_common, "bg_color": "#c0c0c0"})
 f_equal_cell_modified = o_wb.add_format({**f_common, "bg_color": "#a9d171"})
 
 for current_tab_key in tab_names_dict.keys():
+    o_ws = o_wb.add_worksheet(current_tab_key)
     if tab_names_dict[current_tab_key] == {1, 2}:
         # Tab name exists in both spreadsheets, individual cells are compared
-
-        o_ws = o_wb.add_worksheet(current_tab_key)
-        i1_ws = i1_wb[current_tab_key]
-        i2_ws = i2_wb[current_tab_key]
-        is_data_in_tab_modified = False
-
-        modified_rows = set()
-        modified_cols = set()
-        for c in range(max(i1_ws.max_column, i2_ws.max_column) - 1, -1, -1):
-            log_print_message(not args.quiet, f"Comparing tab: {current_tab_key}  column: {c}")
-            o_ws.set_column(c, c, max(
-                i1_ws.column_dimensions[get_column_letter(c + 1)].width,
-                i2_ws.column_dimensions[get_column_letter(c + 1)].width,
-                2))  # 2 is for very narrow columns, to make them easier to spot ;-)
-
-            for r in range(max(i1_ws.max_row, i2_ws.max_row) - 1, -1, -1):
-                log_print_message(not args.quiet and args.verbose,
-                                  f"Comparing tab: {current_tab_key}  column: {c}  row:{r:5}")
-                (i1_value, i2_value) = (i1_ws.cell(r + 1, c + 1).value, i2_ws.cell(r + 1, c + 1).value)
-
-                # Check if cells are (i) empty, (ii) identical, (iii) new or (iv) removed
-                if i1_value in {None, ""} and i2_value in {None, ""}:
-                    # Both cells empty
-                    if args.noempty:
-                        continue
-                    o_ws.write(r, c, i2_value,
-                               get_format(c, r, modified_rows, modified_cols, f_equal_cell, f_equal_cell_modified))
-                    continue
-                elif str(i1_value) == str(i2_value):
-                    # Both cells equal, but not empty
-                    o_ws.write(r, c, str(i1_value),
-                               get_format(c, r, modified_rows, modified_cols, f_equal_cell, f_equal_cell_modified))
-                    continue
-                elif i1_value in {None, ""}:
-                    # First cell empty, so cell value added
-                    val = str(i2_value) if i2_value is not None else ""
-                    o_ws.write(r, c, val,
-                               get_format(c, r, modified_rows, modified_cols, f_added, f_added_cell_modified,
-                                          do_update_sets=args.highlight))
-                    is_data_in_tab_modified = True
-                    continue
-                elif i2_value in {None, ""}:
-                    # Second cell empty, so cell value removed
-                    val = str(i1_value) if i1_value is not None else ""
-                    o_ws.write(r, c, val,
-                               get_format(c, r, modified_rows, modified_cols, f_removed, f_removed_cell_modified,
-                                          do_update_sets=args.highlight))
-                    is_data_in_tab_modified = True
-                    continue
-
-                # None of 4 conditione above applicable, so compare content in detail
-                rich_text = []
-                is_output_rich_string = False
-                for tag, i1, i2, j1, j2 in SequenceMatcher(None, str(i1_value), str(i2_value)).get_opcodes():
-                    if tag == "equal":
-                        rich_text.append(str(i1_value)[i1:i2])
-                    elif tag == "delete":
-                        rich_text.extend([f_removed, str(i1_value)[i1:i2]])
-                        is_output_rich_string = True
-                    elif tag == "insert":
-                        rich_text.extend([f_added, str(i2_value)[j1:j2]])
-                        is_output_rich_string = True
-                    elif tag == "replace":
-                        rich_text.extend([f_removed, str(i1_value)[i1:i2], f_added, str(i2_value)[j1:j2]])
-                        is_output_rich_string = True
-
-                if is_output_rich_string:
-                    o_ws.write_rich_string(r, c, *rich_text,
-                                           get_format(c, r, modified_rows, modified_cols, f_simple, f_modified_cell,
-                                                      do_update_sets=args.highlight))
-                else:
-                    # After 4 obvious checks in the beginning, this should not happen, but if...
-                    o_ws.write(r, c, str(rich_text),
-                               get_format(c, r, modified_rows, modified_cols, f_simple, f_modified_cell,
-                                          do_update_sets=args.highlight))
-                is_data_in_tab_modified = True
-
-        if not is_data_in_tab_modified:
-            o_ws.set_tab_color("gray")
-        elif args.autofilter and args.highlight:
-            o_ws.autofilter(0, 0, 0, max(i1_ws.max_column, i2_ws.max_column) - 1)
+        compare_tabs(o_ws, current_tab_key, i1_wb[current_tab_key], i2_wb[current_tab_key])
 
     elif tab_names_dict[current_tab_key] == {2, }:
         # Tab name exists only in 2nd spreadsheet, i.e. the tab is new, so no comaprison needed, just copy data
         # from 2nd input spreadsheet to output and use "added" formatting
-
-        o_ws = o_wb.add_worksheet(current_tab_key)
-        o_ws.set_tab_color("blue")
-        i2_ws = i2_wb[current_tab_key]
-
-        for c in range(i2_ws.max_column):
-            log_print_message(not args.quiet, f"New tab: {current_tab_key}  column: {c}")
-            o_ws.set_column(c, c, i2_ws.column_dimensions[get_column_letter(c + 1)].width)
-            for r in range(i2_ws.max_row):
-                log_print_message(not args.quiet and args.verbose, f"New tab: {current_tab_key}  column: {c}  row: {r}")
-                val = str(i2_ws.cell(r + 1, c + 1).value) if i2_ws.cell(r + 1, c + 1).value is not None else ""
-                o_ws.write(r, c, val, f_added)
+        clone_tab(o_ws, current_tab_key, i2_wb[current_tab_key], "added")
 
     elif tab_names_dict[current_tab_key] == {1, }:
         # Tab name exists only in 1st spreadsheet i.e. the tab is removed, so no comaprison needed, just copy data
         # from 1st input spreadsheet to output and use "removed" formatting
-
-        o_ws = o_wb.add_worksheet(current_tab_key)
-        o_ws.set_tab_color("red")
-        i1_ws = i1_wb[current_tab_key]
-
-        for c in range(i1_ws.max_column):
-            log_print_message(not args.quiet, f"Removed tab: {current_tab_key}  column: {c}")
-            o_ws.set_column(c, c, i1_ws.column_dimensions[get_column_letter(c + 1)].width)
-            for r in range(i1_ws.max_row):
-                log_print_message(not args.quiet and args.verbose,
-                                  f"Removed tab: {current_tab_key}  column: {c}  row: {r}")
-                val = str(i1_ws.cell(r + 1, c + 1).value) if i1_ws.cell(r + 1, c + 1).value is not None else ""
-                o_ws.write(r, c, val, f_removed)
+        clone_tab(o_ws, current_tab_key, i1_wb[current_tab_key], "removed")
 
 log_print_message(not args.quiet, f"Saving spreadsheet: {args.output}")
 o_wb.close()
