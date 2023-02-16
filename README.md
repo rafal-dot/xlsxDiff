@@ -40,11 +40,14 @@ There are following files:
 ## Download `xlsxDiff`
 
 To download `xlsxDiff`, just do one of the following:
+
 - download the compressed archive from the repository page
   [GitHub](https://github.com/rafal-dot/xlsxDiff) (see `Code`/`Download ZIP`
   button)
+
 or
-- execute a git clone
+
+- execute a git clone:
 ```
 git clone https://github.com/rafal-dot/xlsxDiff
 ```
