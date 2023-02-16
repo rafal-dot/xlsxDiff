@@ -1,7 +1,7 @@
 # `xlsxDiff`
 ![Example use](images/xlsxDiff_intro.png)
 
-Compare two Excel .xlsx files, cell-by-cell, with visualization similar to changes tracking feature in Word
+Compare two Excel `.xlsx` files, cell-by-cell, with visualization similar to changes tracking feature in Word
 
 # INTRODUCTION
 
