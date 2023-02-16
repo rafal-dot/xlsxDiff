@@ -54,7 +54,7 @@ or
 git clone https://github.com/rafal-dot/xlsxDiff.git
 ```
 
-## Python3 Download and installation
+## Python download and installation
 
 To avoid legal challenges, I suggest using the standard Python distribution,
 which can be found at [https://www.python.org/downloads/windows/]
