@@ -37,7 +37,19 @@ There are following files:
 
 # INSTALLATION
 
-## Python3 installation (Windows)
+## Download `xlsxDiff`
+
+To download `xlsxDiff`, just do one of the following:
+- download the compressed archive from the repository page
+  [GitHub](https://github.com/rafal-dot/xlsxDiff) (see `Code`/`Download ZIP`
+  button)
+or
+- execute a git clone
+```
+git clone https://github.com/rafal-dot/xlsxDiff
+```
+
+## Python3 Download and installation
 
 To avoid legal challenges, I suggest using the standard Python distribution,
 which can be found at [https://www.python.org/downloads/windows/]
