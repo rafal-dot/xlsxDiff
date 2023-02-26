@@ -50,7 +50,7 @@ To download `xlsxDiff`, just do one of the following:
 or
 
 - execute a `git clone`:
-```
+```commandline
 git clone https://github.com/rafal-dot/xlsxDiff.git
 ```
 
@@ -68,7 +68,7 @@ I do not use macOS, but you can also find a distribution for this system.
 Install two necessary modules being used by `xlsxDiff`, that allow to
 manipulate `.xlsx` files:
 
-```
+```commandline
 pip install openpyxl xlsxwriter
 ```
 
@@ -77,7 +77,7 @@ pip install openpyxl xlsxwriter
 Using `xlsxDiff` is simple, in Windows environment just run cmd and call the
 script with three parameters: two input files and output file:
 
-```
+```commandline
 python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx
 ```
 
@@ -86,15 +86,32 @@ python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx
 
 If you add `-f` option, formulas will be compared instead of data:
 
-```
+```commandline
 python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx -f
 ```
 
 ![Spreadsheet formulas difference](images/xlsxDiff_diff_text_formula.png)
 
+## Visualize changes in entire rows and columns
+
+It is possible to track changes in columns and rows and, respectively,
+changes in other cells:
+```commandline
+python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx -c staff!B,C -r staff!1
+```
+![data](images/xlsxDiff_cols_rows.png)
+Please see elements highlighted[^1]:
+- Purple: columns `B`+`C` used as index to identify changes in rows, and
+  `1`<sup>st</sup> row used as index to identify changes columns. Tab name
+  being analysed is `staff`;
+- Blue: added columns/rows;
+- Red: removed columns/rows;
+- Green: changes in other cells. Necessary cell position adjustments after
+  inserting and/or deleting columns and/or rows are included.
+
 # LICENCE
 
-Copyright © 2020-2023 Rafał Czeczótka
+Copyright (C) 2020-2023 Rafał Czeczótka
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
@@ -108,3 +125,7 @@ details.
 
 You should have received a copy of the GNU Affero General Public License along
 with this program.  If not, see [https://www.gnu.org/licenses/].
+
+[^1]: Coloured boundary lines are manually overlayed (i.e. are not included in
+Excel spreadsheet) to facilitate visualisation of changes. All other formats
+are just screenshot from Excel
