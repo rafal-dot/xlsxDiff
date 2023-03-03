@@ -7,23 +7,28 @@ changes tracking feature in Word
 # INTRODUCTION
 
 I myself have desired to compare two complex Excel spreadsheets many times. I
-was especially interested in finding things like minor modifications to texts
-in cells, modifications to numbers, or changes to formulas. Unfortunately, all
-the solutions I could find were limited to a simple binary comparison of cell
-values, which helps a lot, but is often too general and requires a huge extra
-effort to precisely identify changes made. Since I couldn't find a suitable
-solution, I finally got annoyed and wrote a solution myself which I am making
-available as open source.
+was especially interested in finding things like:
+
+1. minor modifications to texts in cells,
+2. modifications to numbers,
+3. changes to formulas,
+4. added/removed columns and rows,
+5. modified/added/removed tabs.
+
+Unfortunately, all the solutions I could find were limited to a simple binary
+comparison of cell values, which helps a lot, but is often too general and
+requires a huge extra effort to precisely identify changes made. Since I
+couldn't find a suitable solution, I finally got annoyed and wrote a solution
+myself which I am making available as open source.
 
 The main purpose of this tool is to fill the gap and facilitate the search and
 visualization of changes made between file versions, with an emphasis on the
-ability to track changes made at the level of individual cells with
-visualization similar to changes tracking feature in Word. This script ignores
-all other changes made, like removing/adding/changing order of
-rows/columns/tabs, changes in formatting etc. However, it is easier to quickly
-identify where such general changes have been made and after minor manual
-interventions in the input files it is easy to get a comprehensive and clear
-picture of all changes made.
+ability to track changes made at the level of individual cells, columns/rows
+and tabs with visualization similar to changes tracking feature in Word. This
+script ignores all other changes made, like changes in formatting. However, it
+is easier to quickly identify where such general changes have been made and
+after minor manual interventions in the input files it is easy to get a
+comprehensive and clear picture of all changes made.
 
 ## FILES IN REPOSITORY
 
