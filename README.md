@@ -1,8 +1,8 @@
 # `xlsxDiff`
 ![Example use](images/xlsxDiff_intro.png)
 
-Compare two Excel `.xlsx` files, cell-by-cell, with visualization similar to
-changes tracking feature in Word
+Compare two Excel `.xlsx` files, tab-by-tab, column/row-by-column/row and
+cell-by-cell, with visualization similar to changes tracking feature in Word
 
 # INTRODUCTION
 
@@ -16,8 +16,8 @@ was especially interested in finding things like:
 5. modified/added/removed tabs.
 
 Unfortunately, all the solutions I could find were limited to a simple binary
-comparison of cell values, which helps a lot, but is often too general and
-requires a huge extra effort to precisely identify changes made. Since I
+comparison of relevant cell values. It helps a lot, but is often too general
+and requires a huge extra effort to precisely identify changes made. Since I
 couldn't find a suitable solution, I finally got annoyed and wrote a solution
 myself which I am making available as open source.
 
@@ -125,11 +125,10 @@ later version.
 
 This program is distributed in the hope that it will be useful, WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
-details.
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License along
-with this program.  If not, see [https://www.gnu.org/licenses/].
+with this program. If not, see [https://www.gnu.org/licenses/].
 
 [^1]: Coloured boundary lines are manually overlayed (i.e. are not included in
 Excel spreadsheet) to facilitate visualisation of changes. All other formats
