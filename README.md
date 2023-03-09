@@ -79,6 +79,8 @@ pip install openpyxl xlsxwriter
 
 # USE
 
+## BASIC USE
+
 Using `xlsxDiff` is simple, in Windows environment just run cmd and call the
 script with three parameters: two input files and output file:
 
@@ -88,6 +90,29 @@ python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx
 
 ![Spreadsheet data difference](images/xlsxDiff_diff_text_data.png)
 
+Added fragments of text strings are
+<span style="color:blue"><u>blue and underlined</u></span>
+and removed fragments of text strings are
+<span style="color:red">~~red and crossed out~~</span>. Unchanged cells have a
+gray background.
+
+### CHANGES IN TABS
+
+![Spreadsheet changes in tabs](images/xlsxDiff_tabs.png)
+
+Tabs are highlighted as follows:
+- changed tabs are <span style="color:white">white</span>, more detailed
+  changes are visible in individual cells in the tab,
+- added tabs are <span style="color:blue">blue</span> and content in all
+  individual cells is highlighted as added (i.e.
+  <span style="color:blue"><u>blue and underlined</u></span>),
+- removed tabs are <span style="color:red">red</span> and content in all
+  individual cells is highlighted as removed (i.e.
+  <span style="color:red">~~red and crossed out~~</span>),
+- tabs without changes are <span style="color:grey">grey</span> and content in
+  all individual cells has a gray background.
+
+## CHANGES IN FORMULAS
 
 If you add `-f` option, formulas will be compared instead of data:
 
@@ -106,13 +131,20 @@ python xlsxDiff.py in1.xlsx in2.xlsx out.xlsx -c staff!B,C -r staff!1
 ```
 ![data](images/xlsxDiff_cols_rows.png)
 Please see elements highlighted[^1]:
-- Purple: columns `B`+`C` used as index to identify changes in rows, and
-  `1`<sup>st</sup> row used as index to identify changes columns. Tab name
-  being analysed is `staff`;
-- Blue: added columns/rows;
-- Red: removed columns/rows;
-- Green: changes in other cells. Necessary cell position adjustments after
-  inserting and/or deleting columns and/or rows are included.
+- <span style="color:purple">Purple</span>: in tab `staff` columns `B` and `C`
+  are used as index to identify changes in rows (option `-c staff!B,C`), and
+  `1`<sup>st</sup> row is used as index to identify changes in columns (option
+  `-r staff!1`);
+- <span style="color:blue">Blue</span>: added columns/rows. All text in the
+  cell is <span style="color:blue"><u>blue and underlined</u></span>;
+- <span style="color:red">Red</span>: removed columns/rows. All text in the
+  cell is <span style="color:red">~~red and crossed out~~</span>;
+- <span style="color:green">Green</span>: changes inside cells. Necessary cell
+  position adjustments after inserting and/or deleting columns and/or rows are
+  included. Added fragments of text strings are
+  <span style="color:blue"><u>blue and underlined</u></span> and removed
+  fragments of text strings are
+  <span style="color:red">~~red and crossed out~~</span>.
 
 # LICENCE
 
