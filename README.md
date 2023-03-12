@@ -100,17 +100,12 @@ gray background.
 
 ![Spreadsheet changes in tabs](images/xlsxDiff_tabs.png)
 
-Tabs are highlighted as follows:
-- changed tabs are <span style="color:white">white</span>, more detailed
-  changes are visible in individual cells in the tab,
-- added tabs are <span style="color:blue">blue</span> and content in all
-  individual cells is highlighted as added (i.e.
-  <span style="color:blue"><u>blue and underlined</u></span>),
-- removed tabs are <span style="color:red">red</span> and content in all
-  individual cells is highlighted as removed (i.e.
-  <span style="color:red">~~red and crossed out~~</span>),
-- tabs without changes are <span style="color:grey">grey</span> and content in
-  all individual cells has a gray background.
+Tabs are highlighted as follows: (i) changed tabs are
+<span style="color:white">white</span>, (ii) added tabs are
+<span style="color:blue">blue</span>, (iii) removed tabs are
+<span style="color:red">red</span> and (iv) tabs without changes are
+<span style="color:grey">grey</span>. More detailed changes are visible in
+individual cells in the appropriate tabs, as described in the previous section.
 
 ## CHANGES IN FORMULAS
 
